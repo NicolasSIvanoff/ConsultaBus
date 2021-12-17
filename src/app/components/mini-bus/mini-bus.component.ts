@@ -11,6 +11,8 @@ export class MiniBusComponent implements OnInit {
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
   getApiMiniBusSuccess!: any[];
+  getApiMiniBusError!: string;
+  loading = false;
   constructor(public serv: ServiceService) {}
 
   ngOnInit(): void {
@@ -18,13 +20,23 @@ export class MiniBusComponent implements OnInit {
     this.dtOptions = {
       pagingType: 'full_numbers',
       pageLength: 10,
+      language: {
+        url: 'https://cdn.datatables.net/plug-ins/1.11.3/i18n/pt_br.json',
+      },
     };
   }
 
   getApiMiniBus() {
-    this.serv.getDadosMiniBus().subscribe((data) => {
-      this.getApiMiniBusSuccess = data;
-      this.dtTrigger.next();
-    });
+    this.loading = true;
+    this.serv.getDadosMiniBus().subscribe(
+      (data) => {
+        this.getApiMiniBusSuccess = data;
+        this.dtTrigger.next();
+      },
+      (error) => {
+        this.getApiMiniBusError = error;
+      },
+      () => (this.loading = false)
+    );
   }
 }

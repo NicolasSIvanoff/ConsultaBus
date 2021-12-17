@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
-import { itinerarioModel } from '../models/itinerario.model';
 import { BusModelApi } from '../models/onibus.model';
 import { ServiceService } from '../services/service.service';
 
@@ -15,18 +13,12 @@ export class ApiBusComponent implements OnInit {
   dtTrigger: Subject<any> = new Subject<any>();
   getApiBusSuccess!: BusModelApi[];
   getApiBusError!: string;
-  getItinerarioSuccess!: itinerarioModel;
-  getItinerarioError!: string;
-  nome!: string;
-  codigo!: string;
-  constructor(
-    public serv: ServiceService,
-    private activatedRoute: ActivatedRoute
-  ) {}
+  loading = false;
+
+  constructor(public serv: ServiceService) {}
 
   ngOnInit(): void {
     this.getApiBus();
-    this.getApiItinerary();
     this.dtOptions = {
       pagingType: 'full_numbers',
       pageLength: 10,
@@ -35,8 +27,8 @@ export class ApiBusComponent implements OnInit {
       },
     };
   }
-
   getApiBus() {
+    this.loading = true;
     this.serv.getDadosBus().subscribe(
       (data) => {
         this.getApiBusSuccess = data;
@@ -44,17 +36,8 @@ export class ApiBusComponent implements OnInit {
       },
       (error) => {
         this.getApiBusError = error;
-      }
+      },
+      () => (this.loading = false)
     );
-  }
-  getApiItinerary(): void {
-    const id = this.activatedRoute.snapshot.params.id;
-    this.serv.getDadosItinerary(id).subscribe((data) => {
-      (this.getItinerarioSuccess = data), (this.nome = data.nome);
-      this.codigo = data.codigo;
-      delete data.nome;
-      delete data.codigo;
-      delete data.idlinha;
-    });
   }
 }

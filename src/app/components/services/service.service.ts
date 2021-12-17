@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { itinerarioModel } from '../models/itinerario.model';
 import { BusModelApi } from '../models/onibus.model';
 
 @Injectable({
@@ -9,25 +8,18 @@ import { BusModelApi } from '../models/onibus.model';
 })
 export class ServiceService {
   constructor(private http: HttpClient) {}
-  linkRouteIntinerary: string =
+  linkIntinerary: string =
     'http://www.poatransporte.com.br/php/facades/process.php?a=il&p=';
+  linkApiBus: string =
+    'http://www.poatransporte.com.br/php/facades/process.php?a=nc&p=%25&t=';
 
   getDadosBus(): Observable<BusModelApi[]> {
-    return this.http.get<BusModelApi[]>(
-      'http://www.poatransporte.com.br/php/facades/process.php?a=nc&p=%25&t=o'
-    );
+    return this.http.get<BusModelApi[]>(`${this.linkApiBus}o`);
   }
   getDadosMiniBus(): Observable<BusModelApi[]> {
-    return this.http.get<BusModelApi[]>(
-      'http://www.poatransporte.com.br/php/facades/process.php?a=nc&p=%25&t=l'
-    );
-  }
-  getDadosItinerario(): Observable<itinerarioModel> {
-    return this.http.get<itinerarioModel>(
-      'http://www.poatransporte.com.br/php/facades/process.php?a=il&p=1'
-    );
+    return this.http.get<BusModelApi[]>(`${this.linkApiBus}l`);
   }
   getDadosItinerary(id: number): Observable<any> {
-    return this.http.get<any>(`${this.linkRouteIntinerary}${id}`);
+    return this.http.get<any>(`${this.linkIntinerary}${id}`);
   }
 }
